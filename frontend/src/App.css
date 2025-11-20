@@ -1,0 +1,228 @@
+:root {
+  --bgGradient: linear-gradient(180deg, #0b2f3a 0%, #0e454f 35%, #0f5c57 100%); /* (pt: gradienteFundo) */
+  --cardColor: #0f1f24; /* (pt: corCartao) */
+  --accentColor: #d48b1a; /* (pt: corDestaque) */
+  --textMain: #e8f1f2; /* (pt: textoPrincipal) */
+  --textMuted: #a7bdc0; /* (pt: textoSuave) */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", "Trebuchet MS", system-ui, -apple-system, sans-serif;
+  background: var(--bgGradient);
+  color: var(--textMain);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.appShell { /* (pt: estruturaApp) */
+  width: min(520px, 100%);
+  background: rgba(15, 31, 36, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.appHeader { /* (pt: cabecalhoApp) */
+  display: grid;
+  gap: 0.4rem;
+}
+
+.appTitle { /* (pt: tituloApp) */
+  margin: 0;
+  font-size: 1.8rem;
+  letter-spacing: -0.02em;
+}
+
+.appSubtitle { /* (pt: subtituloApp) */
+  margin: 0;
+  color: var(--textMuted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.ctaCard { /* (pt: cartaoAcao) */
+  background: var(--cardColor);
+  border-radius: 16px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 0.8rem;
+}
+
+.ctaTitle { /* (pt: tituloAcao) */
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.ctaList { /* (pt: listaAcoes) */
+  margin: 0;
+  padding-left: 1rem;
+  color: var(--textMuted);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.secondaryButton { /* (pt: botaoSecundario) */
+  width: 100%;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--textMain);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 150ms ease, background 120ms ease;
+}
+
+.secondaryButton:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.secondaryButton:active {
+  transform: translateY(0);
+}
+
+.secondaryButton.ghost { /* (pt: botaoFantasma) */
+  border-color: rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: var(--textMuted);
+}
+
+.storageRow { /* (pt: linhaArmazenamento) */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.note { /* (pt: nota) */
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--textMuted);
+}
+
+.resultBox { /* (pt: caixaResultado) */
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--textMain);
+}
+
+.resultLabel { /* (pt: rotuloResultado) */
+  color: var(--textMuted);
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.footerNote { /* (pt: notaRodape) */
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--textMuted);
+}
+
+.textIncome { /* (pt: textoReceita) */
+  color: #7bd5c4;
+}
+
+.textExpense { /* (pt: textoDespesa) */
+  color: #f5a3a3;
+}
+
+.textPositive { /* (pt: textoPositivo) */
+  color: #9fe870;
+}
+
+.textNegative { /* (pt: textoNegativo) */
+  color: #ff8e6e;
+}
+
+.accountGroup { /* (pt: grupoConta) */
+  margin-top: 0.5rem;
+}
+
+.bulletList { /* (pt: listaMarcada) */
+  list-style: disc;
+  padding-left: 1.1rem;
+  margin: 0.35rem 0 0.8rem;
+  color: var(--textMain);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.inactiveTag { /* (pt: tagInativa) */
+  color: var(--textMuted);
+  font-size: 0.85rem;
+  margin-left: 0.35rem;
+}
+
+.accountInactive { /* (pt: contaInativa) */
+  opacity: 0.55;
+}
+
+.formGrid { /* (pt: gradeFormulario) */
+  display: grid;
+  gap: 0.6rem;
+}
+
+.formRow { /* (pt: linhaFormulario) */
+  display: grid;
+  gap: 0.35rem;
+}
+
+label { /* (pt: rotulo) */
+  font-size: 0.9rem;
+  color: var(--textMuted);
+}
+
+input[type="text"],
+input[type="number"],
+select { /* (pt: camposFormulario) */
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--textMain);
+  font-size: 0.95rem;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.inputHint { /* (pt: dicaCampo) */
+  font-size: 0.85rem;
+  color: var(--textMuted);
+  margin: 0;
+}
+
+@media (min-width: 560px) {
+  body {
+    padding: 2.5rem;
+  }
+
+  .appShell {
+    padding: 2rem;
+  }
+}
