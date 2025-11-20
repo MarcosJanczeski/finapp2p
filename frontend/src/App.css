@@ -57,6 +57,34 @@ body {
   background: rgba(255, 255, 255, 0.12);
 }
 
+.bottomNav { /* (pt: navInferior) */
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.35rem;
+}
+
+.bottomLink { /* (pt: linkInferior) */
+  text-align: center;
+  padding: 0.55rem 0.4rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--textMain);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.bottomLink.active { /* (pt: linkInferiorAtivo) */
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+}
+
 .appHeader { /* (pt: cabecalhoApp) */
   display: grid;
   gap: 0.4rem;

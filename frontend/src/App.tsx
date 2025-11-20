@@ -43,6 +43,35 @@ function App() {
         </nav>
       </header>
       <Outlet />
+      <footer className="bottomNav" aria-label="Navegação inferior">
+        <NavLink to="/" className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}>
+          Overview
+        </NavLink>
+        <NavLink
+          to="/new"
+          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
+        >
+          Novo
+        </NavLink>
+        <NavLink
+          to="/journal"
+          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
+        >
+          Lançamentos
+        </NavLink>
+        <NavLink
+          to="/balances"
+          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
+        >
+          Saldos
+        </NavLink>
+        <NavLink
+          to="/recurrences"
+          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
+        >
+          Recorrências
+        </NavLink>
+      </footer>
     </div>
   );
 }
