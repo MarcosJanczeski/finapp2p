@@ -24,6 +24,8 @@ export function RecurrencesPage() {
   const [amount, setAmount] = useState(""); // (pt: valor)
   const [day, setDay] = useState("5"); // (pt: dia)
   const [type, setType] = useState<"expense" | "income">("expense"); // (pt: tipo)
+  const [frequency, setFrequency] = useState<"monthly" | "weekly">("monthly"); // (pt: frequencia)
+  const [weekday, setWeekday] = useState("1"); // (pt: diaSemana)
   const [categoryAccountId, setCategoryAccountId] = useState(
     accountPlan.find((a) => a.type === "Expense")?.id ?? "",
   ); // (pt: contaCategoria)
@@ -53,6 +55,7 @@ export function RecurrencesPage() {
       setHint("Escolha contas válidas.");
       return;
     }
+    const chosenDay = frequency === "monthly" ? Number(day) || 1 : Number(weekday) || 1; // (pt: diaEscolhido)
     if (editingId) {
       const rec = recurrences.find((item) => item.id === editingId);
       if (!rec) {
@@ -63,7 +66,9 @@ export function RecurrencesPage() {
         ...rec,
         description: description.trim(),
         amount: numericAmount,
-        day: Number(day) || 1,
+        day: chosenDay,
+        weekday: frequency === "weekly" ? chosenDay : rec.weekday,
+        frequency,
         categoryAccountId,
         counterAccountId,
       });
@@ -71,7 +76,9 @@ export function RecurrencesPage() {
       addRecurrence({
         description: description.trim(),
         amount: numericAmount,
-        day: Number(day) || 1,
+        day: chosenDay,
+        weekday: frequency === "weekly" ? chosenDay : undefined,
+        frequency,
         type,
         categoryAccountId,
         counterAccountId,
@@ -92,6 +99,8 @@ export function RecurrencesPage() {
     setAmount(String(rec.amount));
     setDay(String(rec.day));
     setType(rec.type);
+    setFrequency(rec.frequency);
+    setWeekday(String(rec.weekday ?? 1));
     setCategoryAccountId(rec.categoryAccountId);
     setCounterAccountId(rec.counterAccountId);
     setHint("Editando recorrência; salve ou cancele.");
@@ -102,6 +111,8 @@ export function RecurrencesPage() {
     setDescription("");
     setAmount("");
     setDay("5");
+    setWeekday("1");
+    setFrequency("monthly");
     setHint("Edição cancelada.");
   };
 
@@ -137,6 +148,17 @@ export function RecurrencesPage() {
         <span className="resultLabel">{editingId ? "Editar recorrência" : "Cadastrar recorrência"}</span>
         <div className="formGrid">
           <div className="formRow">
+            <label htmlFor="recFrequency">Frequência</label>
+            <select
+              id="recFrequency"
+              value={frequency}
+              onChange={(e) => setFrequency(e.target.value as "monthly" | "weekly")}
+            >
+              <option value="monthly">Mensal</option>
+              <option value="weekly">Semanal</option>
+            </select>
+          </div>
+          <div className="formRow">
             <label htmlFor="recType">Tipo</label>
             <select
               id="recType"
@@ -170,8 +192,32 @@ export function RecurrencesPage() {
             />
           </div>
           <div className="formRow">
-            <label htmlFor="recDay">Dia do mês</label>
-            <input id="recDay" type="number" min="1" max="28" value={day} onChange={(e) => setDay(e.target.value)} />
+            {frequency === "monthly" ? (
+              <>
+                <label htmlFor="recDay">Dia do mês</label>
+                <input
+                  id="recDay"
+                  type="number"
+                  min="1"
+                  max="28"
+                  value={day}
+                  onChange={(e) => setDay(e.target.value)}
+                />
+              </>
+            ) : (
+              <>
+                <label htmlFor="recWeekday">Dia da semana</label>
+                <select id="recWeekday" value={weekday} onChange={(e) => setWeekday(e.target.value)}>
+                  <option value="1">Segunda</option>
+                  <option value="2">Terça</option>
+                  <option value="3">Quarta</option>
+                  <option value="4">Quinta</option>
+                  <option value="5">Sexta</option>
+                  <option value="6">Sábado</option>
+                  <option value="0">Domingo</option>
+                </select>
+              </>
+            )}
           </div>
           <div className="formRow">
             <label htmlFor="recCategory">{type === "expense" ? "Categoria de despesa" : "Categoria de receita"}</label>
@@ -259,7 +305,12 @@ export function RecurrencesPage() {
                   <div>
                     <p className={`recTitle ${toneClass}`}>{rec.description}</p>
                     <p className="recMeta">
-                      {formatCurrencyBRL(rec.amount)} no dia {rec.day} — {cat} ↔ {contra}
+                      {formatCurrencyBRL(rec.amount)} •{" "}
+                      {rec.frequency === "monthly"
+                        ? `Dia ${rec.day}`
+                        : `Semanal toda ${["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"][rec.weekday ?? 1]}`}
+                      {" — "}
+                      {cat} ↔ {contra}
                     </p>
                   </div>
                   <span className={`pill ${rec.isActive ? "success" : "warning"}`}>

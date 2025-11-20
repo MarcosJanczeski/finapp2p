@@ -26,13 +26,16 @@ export type QuickEntryType =
   | "loan_installment"; // (pt: tiposLancamentoRapido)
 
 export type RecurrenceType = "expense" | "income"; // (pt: tipoRecorrencia)
+export type RecurrenceFrequency = "monthly" | "weekly"; // (pt: frequenciaRecorrencia)
 
 export type Recurrence = { // (pt: Recorrencia)
   id: string; // (pt: id)
   description: string; // (pt: descricao)
   amount: number; // (pt: valor)
   day: number; // (pt: diaVencimento)
+  weekday?: number; // 0-6 (pt: diaSemana)
   type: RecurrenceType; // (pt: tipo)
+  frequency: RecurrenceFrequency; // (pt: frequencia)
   categoryAccountId: string; // (pt: contaCategoria)
   counterAccountId: string; // (pt: contaContraPartida)
   startDate: string; // ISO (pt: inicio)
@@ -47,6 +50,7 @@ export type RecurrenceOccurrence = { // (pt: OcorrenciaRecorrencia)
   amount: number; // (pt: valor)
   date: string; // ISO (pt: data)
   type: RecurrenceType; // (pt: tipo)
+  frequency: RecurrenceFrequency; // (pt: frequencia)
   categoryAccountId: string; // (pt: contaCategoria)
   counterAccountId: string; // (pt: contaContraPartida)
 };
@@ -160,6 +164,7 @@ const recurrencesSeed: Recurrence[] = [
     amount: 1650,
     day: 5,
     type: "expense",
+    frequency: "monthly",
     categoryAccountId: "X1",
     counterAccountId: "A1",
     startDate: "2024-01-01",
@@ -171,6 +176,7 @@ const recurrencesSeed: Recurrence[] = [
     amount: 12000,
     day: 3,
     type: "income",
+    frequency: "monthly",
     categoryAccountId: "I1",
     counterAccountId: "A2",
     startDate: "2024-01-01",
@@ -182,7 +188,21 @@ const recurrencesSeed: Recurrence[] = [
     amount: 139.9,
     day: 10,
     type: "expense",
+    frequency: "monthly",
     categoryAccountId: "X2",
+    counterAccountId: "A2",
+    startDate: "2024-01-01",
+    isActive: true,
+  },
+  {
+    id: "R4",
+    description: "Corrida de app (semanal)",
+    amount: 800,
+    day: 1,
+    weekday: 1,
+    type: "income",
+    frequency: "weekly",
+    categoryAccountId: "I2",
     counterAccountId: "A2",
     startDate: "2024-01-01",
     isActive: true,
@@ -245,7 +265,11 @@ function loadRecurrencesFromStorage(): Recurrence[] { // (pt: carregarRecorrenci
   try {
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
-      return parsed.map((rec) => ({ ...rec, isActive: rec.isActive ?? true }));
+      return parsed.map((rec) => ({
+        ...rec,
+        isActive: rec.isActive ?? true,
+        frequency: rec.frequency ?? "monthly",
+      }));
     }
     return recurrencesSeed;
   } catch (error) {
@@ -320,7 +344,7 @@ function mapQuickEntryToLines(payload: QuickEntryPayload): JournalLine[] { // (p
   ];
 }
 
-function generateRecurrenceOccurrences(recurrences: Recurrence[], monthsAhead = 2): RecurrenceOccurrence[] { // (pt: gerarOcorrenciasRecorrencias)
+function generateRecurrenceOccurrences(recurrences: Recurrence[], monthsAhead = 2, weeksAhead = 12): RecurrenceOccurrence[] { // (pt: gerarOcorrenciasRecorrencias)
   const now = new Date();
   const startYear = now.getFullYear();
   const startMonth = now.getMonth(); // 0-based
@@ -328,21 +352,49 @@ function generateRecurrenceOccurrences(recurrences: Recurrence[], monthsAhead = 
 
   recurrences.forEach((rec) => {
     if (!rec.isActive) return;
-    for (let i = 0; i <= monthsAhead; i += 1) {
-      const monthDate = new Date(startYear, startMonth + i, rec.day);
-      const iso = monthDate.toISOString().slice(0, 10);
-      if (rec.startDate && iso < rec.startDate.slice(0, 10)) continue;
-      if (rec.endDate && iso > rec.endDate.slice(0, 10)) continue;
-      occurrences.push({
-        id: `${rec.id}-${iso}`,
-        recurrenceId: rec.id,
-        description: rec.description,
-        amount: rec.amount,
-        date: iso,
-        type: rec.type,
-        categoryAccountId: rec.categoryAccountId,
-        counterAccountId: rec.counterAccountId,
-      });
+    if (rec.frequency === "monthly") {
+      for (let i = 0; i <= monthsAhead; i += 1) {
+        const monthDate = new Date(startYear, startMonth + i, rec.day);
+        const iso = monthDate.toISOString().slice(0, 10);
+        if (rec.startDate && iso < rec.startDate.slice(0, 10)) continue;
+        if (rec.endDate && iso > rec.endDate.slice(0, 10)) continue;
+        occurrences.push({
+          id: `${rec.id}-${iso}`,
+          recurrenceId: rec.id,
+          description: rec.description,
+          amount: rec.amount,
+          date: iso,
+          type: rec.type,
+          frequency: rec.frequency,
+          categoryAccountId: rec.categoryAccountId,
+          counterAccountId: rec.counterAccountId,
+        });
+      }
+    } else {
+      const weekday = rec.weekday ?? 0;
+      const today = new Date();
+      const offset = (weekday - today.getDay() + 7) % 7;
+      let firstDate = new Date(today);
+      firstDate.setDate(today.getDate() + offset);
+
+      for (let w = 0; w < weeksAhead; w += 1) {
+        const occDate = new Date(firstDate);
+        occDate.setDate(firstDate.getDate() + w * 7);
+        const iso = occDate.toISOString().slice(0, 10);
+        if (rec.startDate && iso < rec.startDate.slice(0, 10)) continue;
+        if (rec.endDate && iso > rec.endDate.slice(0, 10)) continue;
+        occurrences.push({
+          id: `${rec.id}-${iso}`,
+          recurrenceId: rec.id,
+          description: rec.description,
+          amount: rec.amount,
+          date: iso,
+          type: rec.type,
+          frequency: rec.frequency,
+          categoryAccountId: rec.categoryAccountId,
+          counterAccountId: rec.counterAccountId,
+        });
+      }
     }
   });
 
