@@ -122,199 +122,219 @@ export function NewEntryPage() {
   return (
     <section className="ctaCard">
       <h2 className="ctaTitle">Novo lançamento</h2>
-      <div className="resultBox">
-        <div className="formGrid">
-          <div className="formRow">
-            <label htmlFor="quickType">Tipo</label>
-            <select id="quickType" value={quickType} onChange={(e) => setQuickType(e.target.value as QuickEntryType)}>
-              <option value="expense">Despesa</option>
-              <option value="income">Receita</option>
-              <option value="transfer">Transferência</option>
-              <option value="card_purchase">Compra no cartão</option>
-              <option value="card_payment">Pagamento de cartão</option>
-              <option value="installment_purchase">Compra parcelada</option>
-              <option value="loan_installment">Parcela de empréstimo</option>
-            </select>
+      <div className="cardList">
+        <article className="infoCard">
+          <div className="infoHeader">
+            <span className="resultLabel">Dados do lançamento</span>
+            <span className="pill neutral">3 campos principais</span>
           </div>
-
-          <div className="formRow">
-            <label htmlFor="entryDesc">Descrição</label>
-            <input
-              id="entryDesc"
-              type="text"
-              placeholder="Ex.: Compra no mercado"
-              autoComplete="off"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-
-          <div className="formRow">
-            <label htmlFor="entryAmount">Valor (R$)</label>
-            <input
-              id="entryAmount"
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder="0,00"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-
-          {quickType !== "income" && (
+          <div className="formGrid">
             <div className="formRow">
-              <label htmlFor="expenseCategory">Categoria de despesa</label>
-              <select
-                id="expenseCategory"
-                value={expenseCategoryId}
-                onChange={(e) => setExpenseCategoryId(e.target.value)}
-              >
-                {accountPlan
-                  .filter((acc) => acc.type === "Expense")
-                  .map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.displayName}
-                      {acc.isActive ? "" : " (inativa)"}
-                    </option>
-                  ))}
+              <label htmlFor="quickType">Tipo</label>
+              <select id="quickType" value={quickType} onChange={(e) => setQuickType(e.target.value as QuickEntryType)}>
+                <option value="expense">Despesa</option>
+                <option value="income">Receita</option>
+                <option value="transfer">Transferência</option>
+                <option value="card_purchase">Compra no cartão</option>
+                <option value="card_payment">Pagamento de cartão</option>
+                <option value="installment_purchase">Compra parcelada</option>
+                <option value="loan_installment">Parcela de empréstimo</option>
               </select>
             </div>
-          )}
 
-          {quickType === "income" && (
             <div className="formRow">
-              <label htmlFor="incomeCategory">Categoria de receita</label>
-              <select
-                id="incomeCategory"
-                value={incomeCategoryId}
-                onChange={(e) => setIncomeCategoryId(e.target.value)}
-              >
-                {accountPlan
-                  .filter((acc) => acc.type === "Income")
-                  .map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.displayName}
-                      {acc.isActive ? "" : " (inativa)"}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          )}
-
-          {(quickType === "expense" ||
-            quickType === "card_payment" ||
-            quickType === "loan_installment" ||
-            quickType === "card_purchase" ||
-            quickType === "installment_purchase") && (
-            <div className="formRow">
-              <label htmlFor="payFrom">Pagar de</label>
-              <select id="payFrom" value={payFromId} onChange={(e) => setPayFromId(e.target.value)}>
-                {accountPlan
-                  .filter((acc) => acc.type === "Asset" || acc.type === "Liability")
-                  .map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.displayName}
-                      {acc.isActive ? "" : " (inativa)"}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          )}
-
-          {quickType === "income" && (
-            <div className="formRow">
-              <label htmlFor="receiveIn">Receber em</label>
-              <select id="receiveIn" value={receiveInId} onChange={(e) => setReceiveInId(e.target.value)}>
-                {accountPlan
-                  .filter((acc) => acc.type === "Asset")
-                  .map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.displayName}
-                      {acc.isActive ? "" : " (inativa)"}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          )}
-
-          {quickType === "transfer" && (
-            <>
-              <div className="formRow">
-                <label htmlFor="transferFrom">Transferir de</label>
-                <select id="transferFrom" value={transferFromId} onChange={(e) => setTransferFromId(e.target.value)}>
-                  {accountPlan
-                    .filter((acc) => acc.type === "Asset")
-                    .map((acc) => (
-                      <option key={acc.id} value={acc.id}>
-                        {acc.displayName}
-                        {acc.isActive ? "" : " (inativa)"}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div className="formRow">
-                <label htmlFor="transferTo">Transferir para</label>
-                <select id="transferTo" value={transferToId} onChange={(e) => setTransferToId(e.target.value)}>
-                  {accountPlan
-                    .filter((acc) => acc.type === "Asset")
-                    .map((acc) => (
-                      <option key={acc.id} value={acc.id}>
-                        {acc.displayName}
-                        {acc.isActive ? "" : " (inativa)"}
-                      </option>
-                    ))}
-                </select>
-              </div>
-            </>
-          )}
-
-          {(quickType === "card_purchase" || quickType === "installment_purchase" || quickType === "card_payment") && (
-            <div className="formRow">
-              <label htmlFor="cardAccount">Cartão / Passivo</label>
-              <select id="cardAccount" value={cardAccountId} onChange={(e) => setCardAccountId(e.target.value)}>
-                {accountPlan
-                  .filter((acc) => acc.type === "Liability")
-                  .map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.displayName}
-                      {acc.isActive ? "" : " (inativa)"}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          )}
-
-          {quickType === "loan_installment" && (
-            <div className="formRow">
-              <label htmlFor="loanAccount">Conta de empréstimo</label>
-              <select id="loanAccount" value={loanAccountId} onChange={(e) => setLoanAccountId(e.target.value)}>
-                {accountPlan
-                  .filter((acc) => acc.type === "Liability")
-                  .map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.displayName}
-                      {acc.isActive ? "" : " (inativa)"}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          )}
-
-          {(quickType === "installment_purchase" || quickType === "loan_installment") && (
-            <div className="formRow">
-              <label htmlFor="parcelCount">Parcelas</label>
+              <label htmlFor="entryDesc">Descrição</label>
               <input
-                id="parcelCount"
-                type="number"
-                min="1"
-                step="1"
-                value={parcelCount}
-                onChange={(e) => setParcelCount(e.target.value)}
+                id="entryDesc"
+                type="text"
+                placeholder="Ex.: Compra no mercado"
+                autoComplete="off"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
-          )}
 
+            <div className="formRow">
+              <label htmlFor="entryAmount">Valor (R$)</label>
+              <input
+                id="entryAmount"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0,00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+            </div>
+          </div>
+        </article>
+
+        <article className="infoCard">
+          <div className="infoHeader">
+            <span className="resultLabel">Contas e categorias</span>
+            <span className="pill neutral">Ajusta conforme o tipo</span>
+          </div>
+          <div className="formGrid">
+            {quickType !== "income" && (
+              <div className="formRow">
+                <label htmlFor="expenseCategory">Categoria de despesa</label>
+                <select
+                  id="expenseCategory"
+                  value={expenseCategoryId}
+                  onChange={(e) => setExpenseCategoryId(e.target.value)}
+                >
+                  {accountPlan
+                    .filter((acc) => acc.type === "Expense")
+                    .map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.displayName}
+                        {acc.isActive ? "" : " (inativa)"}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
+
+            {quickType === "income" && (
+              <div className="formRow">
+                <label htmlFor="incomeCategory">Categoria de receita</label>
+                <select
+                  id="incomeCategory"
+                  value={incomeCategoryId}
+                  onChange={(e) => setIncomeCategoryId(e.target.value)}
+                >
+                  {accountPlan
+                    .filter((acc) => acc.type === "Income")
+                    .map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.displayName}
+                        {acc.isActive ? "" : " (inativa)"}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
+
+            {(quickType === "expense" ||
+              quickType === "card_payment" ||
+              quickType === "loan_installment" ||
+              quickType === "card_purchase" ||
+              quickType === "installment_purchase") && (
+              <div className="formRow">
+                <label htmlFor="payFrom">Pagar de</label>
+                <select id="payFrom" value={payFromId} onChange={(e) => setPayFromId(e.target.value)}>
+                  {accountPlan
+                    .filter((acc) => acc.type === "Asset" || acc.type === "Liability")
+                    .map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.displayName}
+                        {acc.isActive ? "" : " (inativa)"}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
+
+            {quickType === "income" && (
+              <div className="formRow">
+                <label htmlFor="receiveIn">Receber em</label>
+                <select id="receiveIn" value={receiveInId} onChange={(e) => setReceiveInId(e.target.value)}>
+                  {accountPlan
+                    .filter((acc) => acc.type === "Asset")
+                    .map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.displayName}
+                        {acc.isActive ? "" : " (inativa)"}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
+
+            {quickType === "transfer" && (
+              <>
+                <div className="formRow">
+                  <label htmlFor="transferFrom">Transferir de</label>
+                  <select id="transferFrom" value={transferFromId} onChange={(e) => setTransferFromId(e.target.value)}>
+                    {accountPlan
+                      .filter((acc) => acc.type === "Asset")
+                      .map((acc) => (
+                        <option key={acc.id} value={acc.id}>
+                          {acc.displayName}
+                          {acc.isActive ? "" : " (inativa)"}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="formRow">
+                  <label htmlFor="transferTo">Transferir para</label>
+                  <select id="transferTo" value={transferToId} onChange={(e) => setTransferToId(e.target.value)}>
+                    {accountPlan
+                      .filter((acc) => acc.type === "Asset")
+                      .map((acc) => (
+                        <option key={acc.id} value={acc.id}>
+                          {acc.displayName}
+                          {acc.isActive ? "" : " (inativa)"}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </>
+            )}
+
+            {(quickType === "card_purchase" || quickType === "installment_purchase" || quickType === "card_payment") && (
+              <div className="formRow">
+                <label htmlFor="cardAccount">Cartão / Passivo</label>
+                <select id="cardAccount" value={cardAccountId} onChange={(e) => setCardAccountId(e.target.value)}>
+                  {accountPlan
+                    .filter((acc) => acc.type === "Liability")
+                    .map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.displayName}
+                        {acc.isActive ? "" : " (inativa)"}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
+
+            {quickType === "loan_installment" && (
+              <div className="formRow">
+                <label htmlFor="loanAccount">Conta de empréstimo</label>
+                <select id="loanAccount" value={loanAccountId} onChange={(e) => setLoanAccountId(e.target.value)}>
+                  {accountPlan
+                    .filter((acc) => acc.type === "Liability")
+                    .map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.displayName}
+                        {acc.isActive ? "" : " (inativa)"}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
+
+            {(quickType === "installment_purchase" || quickType === "loan_installment") && (
+              <div className="formRow">
+                <label htmlFor="parcelCount">Parcelas</label>
+                <input
+                  id="parcelCount"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={parcelCount}
+                  onChange={(e) => setParcelCount(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+        </article>
+
+        <article className="infoCard">
+          <div className="infoHeader">
+            <span className="resultLabel">Confirmação</span>
+            <span className="pill neutral">Salva no mês atual</span>
+          </div>
           <button className="secondaryButton" type="button" onClick={submit}>
             Adicionar lançamento
           </button>
@@ -325,7 +345,7 @@ export function NewEntryPage() {
           >
             {hintMessage}
           </p>
-        </div>
+        </article>
       </div>
     </section>
   );
