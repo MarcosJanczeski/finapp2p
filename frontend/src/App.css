@@ -78,6 +78,37 @@ body {
   line-height: 1.4;
 }
 
+.headerBar { /* (pt: barraCabecalho) */
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headerButton { /* (pt: botaoCabecalho) */
+  height: 42px;
+  min-width: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--textMain);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.headerButton.ghost { /* (pt: botaoCabecalhoFantasma) */
+  background: transparent;
+  color: var(--textMuted);
+}
+
+.headerTitle { /* (pt: tituloCabecalho) */
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
 .ctaCard { /* (pt: cartaoAcao) */
   background: var(--cardColor);
   border-radius: 16px;
@@ -242,6 +273,206 @@ input[type="number"]::-webkit-inner-spin-button {
   font-size: 0.85rem;
   color: var(--textMuted);
   margin: 0;
+}
+
+.sectionHeader { /* (pt: cabecalhoSecao) */
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.pillRow { /* (pt: linhaPills) */
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pill { /* (pt: selo) */
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--textMain);
+}
+
+.pill.success { /* (pt: seloSucesso) */
+  background: rgba(123, 213, 196, 0.12);
+  border-color: rgba(123, 213, 196, 0.35);
+  color: #9fe870;
+}
+
+.pill.warning { /* (pt: seloAlerta) */
+  background: rgba(255, 195, 113, 0.12);
+  border-color: rgba(255, 195, 113, 0.35);
+  color: #ffc371;
+}
+
+.pill.danger { /* (pt: seloPerigo) */
+  background: rgba(255, 142, 110, 0.12);
+  border-color: rgba(255, 142, 110, 0.35);
+  color: #ff8e6e;
+}
+
+.recurrenceSummary { /* (pt: resumoRecorrencias) */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.summaryCard { /* (pt: cartaoResumo) */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.recurrenceList { /* (pt: listaRecorrencias) */
+  display: grid;
+  gap: 0.7rem;
+}
+
+.recCard { /* (pt: cartaoRecorrencia) */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.7rem;
+  background: rgba(255, 255, 255, 0.04);
+  display: grid;
+  gap: 0.5rem;
+}
+
+.recCard.muted { /* (pt: cartaoSuave) */
+  opacity: 0.6;
+}
+
+.recMain { /* (pt: cabecalhoRecorrencia) */
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recTitle { /* (pt: tituloRecorrencia) */
+  margin: 0;
+  font-weight: 700;
+}
+
+.recMeta { /* (pt: metaRecorrencia) */
+  margin: 0.15rem 0 0;
+  color: var(--textMuted);
+  font-size: 0.9rem;
+}
+
+.recActions { /* (pt: acoesRecorrencia) */
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.chipButton { /* (pt: botaoChip) */
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--textMain);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.chipButton.danger { /* (pt: botaoChipPerigo) */
+  border-color: rgba(255, 142, 110, 0.4);
+  color: #ff8e6e;
+}
+
+.settingsOverlay { /* (pt: sobreposicaoConfiguracoes) */
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.settingsOverlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.settingsPanel { /* (pt: painelConfiguracoes) */
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(380px, 92vw);
+  height: 100vh;
+  background: #0b1a1f;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.4);
+  padding: 1rem;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 0.8rem;
+  transform: translateX(105%);
+  transition: transform 200ms ease;
+  overflow-y: auto;
+  z-index: 20;
+}
+
+.settingsPanel.open {
+  transform: translateX(0);
+}
+
+.settingsHeader { /* (pt: cabecalhoPainel) */
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.settingsKicker { /* (pt: chamadaPainel) */
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--textMuted);
+  font-size: 0.75rem;
+}
+
+.settingsTitle { /* (pt: tituloPainel) */
+  margin: 0.1rem 0 0;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+}
+
+.settingsBody { /* (pt: corpoPainel) */
+  display: grid;
+  gap: 1rem;
+}
+
+.settingsSection { /* (pt: secaoPainel) */
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.settingsLabel { /* (pt: rotuloPainel) */
+  margin: 0;
+  color: var(--textMuted);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.switchRow { /* (pt: linhaAlternancia) */
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.65rem;
+  align-items: center;
+  color: var(--textMain);
+  font-size: 0.95rem;
 }
 
 @media (min-width: 720px) {

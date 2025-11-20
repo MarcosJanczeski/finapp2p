@@ -37,6 +37,7 @@ export type Recurrence = { // (pt: Recorrencia)
   counterAccountId: string; // (pt: contaContraPartida)
   startDate: string; // ISO (pt: inicio)
   endDate?: string; // ISO opcional (pt: fim)
+  isActive: boolean; // (pt: ativa)
 }; // (pt: Recorrencia)
 
 export type RecurrenceOccurrence = { // (pt: OcorrenciaRecorrencia)
@@ -75,7 +76,10 @@ type FinanceContextValue = { // (pt: ContextoFinancas)
   saveMonth: () => void; // (pt: salvarMes)
   loadMonth: () => void; // (pt: carregarMes)
   addQuickEntry: (payload: QuickEntryPayload) => void; // (pt: adicionarLancamentoRapido)
-  addRecurrence: (rec: Omit<Recurrence, "id">) => void; // (pt: adicionarRecorrencia)
+  addRecurrence: (rec: Omit<Recurrence, "id" | "isActive">) => void; // (pt: adicionarRecorrencia)
+  updateRecurrence: (rec: Recurrence) => void; // (pt: atualizarRecorrencia)
+  deleteRecurrence: (id: string) => void; // (pt: excluirRecorrencia)
+  toggleRecurrenceActive: (id: string, active: boolean) => void; // (pt: alternarRecorrenciaAtiva)
 };
 
 const FinanceContext = createContext<FinanceContextValue | null>(null);
@@ -159,6 +163,7 @@ const recurrencesSeed: Recurrence[] = [
     categoryAccountId: "X1",
     counterAccountId: "A1",
     startDate: "2024-01-01",
+    isActive: true,
   },
   {
     id: "R2",
@@ -169,6 +174,7 @@ const recurrencesSeed: Recurrence[] = [
     categoryAccountId: "I1",
     counterAccountId: "A2",
     startDate: "2024-01-01",
+    isActive: true,
   },
   {
     id: "R3",
@@ -179,6 +185,7 @@ const recurrencesSeed: Recurrence[] = [
     categoryAccountId: "X2",
     counterAccountId: "A2",
     startDate: "2024-01-01",
+    isActive: true,
   },
 ]; // (pt: recorrenciasExemplo)
 
@@ -237,7 +244,9 @@ function loadRecurrencesFromStorage(): Recurrence[] { // (pt: carregarRecorrenci
   if (!raw) return recurrencesSeed;
   try {
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return parsed;
+    if (Array.isArray(parsed)) {
+      return parsed.map((rec) => ({ ...rec, isActive: rec.isActive ?? true }));
+    }
     return recurrencesSeed;
   } catch (error) {
     console.error(error);
@@ -318,6 +327,7 @@ function generateRecurrenceOccurrences(recurrences: Recurrence[], monthsAhead = 
   const occurrences: RecurrenceOccurrence[] = [];
 
   recurrences.forEach((rec) => {
+    if (!rec.isActive) return;
     for (let i = 0; i <= monthsAhead; i += 1) {
       const monthDate = new Date(startYear, startMonth + i, rec.day);
       const iso = monthDate.toISOString().slice(0, 10);
@@ -416,9 +426,30 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) { /
     loadMonth,
     addQuickEntry,
     addRecurrence(rec) {
-      const newRec: Recurrence = { ...rec, id: `R${Date.now()}` };
+      const newRec: Recurrence = { ...rec, id: `R${Date.now()}`, isActive: true };
       setRecurrences((prev) => {
         const updated = [...prev, newRec];
+        saveRecurrencesToStorage(updated);
+        return updated;
+      });
+    },
+    updateRecurrence(updated) {
+      setRecurrences((prev) => {
+        const merged = prev.map((rec) => (rec.id === updated.id ? { ...updated } : rec));
+        saveRecurrencesToStorage(merged);
+        return merged;
+      });
+    },
+    deleteRecurrence(id) {
+      setRecurrences((prev) => {
+        const filtered = prev.filter((rec) => rec.id !== id);
+        saveRecurrencesToStorage(filtered);
+        return filtered;
+      });
+    },
+    toggleRecurrenceActive(id, active) {
+      setRecurrences((prev) => {
+        const updated = prev.map((rec) => (rec.id === id ? { ...rec, isActive: active } : rec));
         saveRecurrencesToStorage(updated);
         return updated;
       });

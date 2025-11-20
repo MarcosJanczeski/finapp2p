@@ -11,18 +11,33 @@ function groupByMonth(occurrences: ReturnType<typeof useFinance>["upcomingRecurr
 }
 
 export function RecurrencesPage() {
-  const { recurrences, upcomingRecurrences, accountPlan, addRecurrence } = useFinance();
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
-  const [day, setDay] = useState("5");
-  const [type, setType] = useState<"expense" | "income">("expense");
+  const {
+    recurrences,
+    upcomingRecurrences,
+    accountPlan,
+    addRecurrence,
+    updateRecurrence,
+    deleteRecurrence,
+    toggleRecurrenceActive,
+  } = useFinance();
+  const [description, setDescription] = useState(""); // (pt: descricao)
+  const [amount, setAmount] = useState(""); // (pt: valor)
+  const [day, setDay] = useState("5"); // (pt: dia)
+  const [type, setType] = useState<"expense" | "income">("expense"); // (pt: tipo)
   const [categoryAccountId, setCategoryAccountId] = useState(
     accountPlan.find((a) => a.type === "Expense")?.id ?? "",
-  );
-  const [counterAccountId, setCounterAccountId] = useState(accountPlan.find((a) => a.type === "Asset")?.id ?? "");
-  const [hint, setHint] = useState("Preencha e cadastre a recorrência.");
+  ); // (pt: contaCategoria)
+  const [counterAccountId, setCounterAccountId] = useState(accountPlan.find((a) => a.type === "Asset")?.id ?? ""); // (pt: contaContrapartida)
+  const [editingId, setEditingId] = useState<string | null>(null); // (pt: idEdicao)
+  const [hint, setHint] = useState("Preencha e cadastre a recorrência."); // (pt: dica)
 
   const grouped = groupByMonth(upcomingRecurrences);
+  const activeCount = recurrences.filter((rec) => rec.isActive).length; // (pt: totalAtivas)
+  const pausedCount = recurrences.filter((rec) => !rec.isActive).length; // (pt: totalPausadas)
+  const monthDrift = Object.entries(grouped).map(([month, occs]) => ({
+    month,
+    amount: occs.reduce((sum, occ) => sum + (occ.type === "expense" ? -occ.amount : occ.amount), 0),
+  })); // (pt: saldoPorMes)
 
   const submit = () => {
     const numericAmount = parseFloat(amount);
@@ -38,34 +53,97 @@ export function RecurrencesPage() {
       setHint("Escolha contas válidas.");
       return;
     }
-    addRecurrence({
-      description: description.trim(),
-      amount: numericAmount,
-      day: Number(day) || 1,
-      type,
-      categoryAccountId,
-      counterAccountId,
-      startDate: new Date().toISOString().slice(0, 10),
-    });
+    if (editingId) {
+      const rec = recurrences.find((item) => item.id === editingId);
+      if (!rec) {
+        setHint("Não foi possível localizar para editar.");
+        return;
+      }
+      updateRecurrence({
+        ...rec,
+        description: description.trim(),
+        amount: numericAmount,
+        day: Number(day) || 1,
+        categoryAccountId,
+        counterAccountId,
+      });
+    } else {
+      addRecurrence({
+        description: description.trim(),
+        amount: numericAmount,
+        day: Number(day) || 1,
+        type,
+        categoryAccountId,
+        counterAccountId,
+        startDate: new Date().toISOString().slice(0, 10),
+      });
+    }
     setDescription("");
     setAmount("");
-    setHint("Recorrência adicionada.");
+    setEditingId(null);
+    setHint("Recorrência salva.");
+  };
+
+  const startEdit = (id: string) => {
+    const rec = recurrences.find((item) => item.id === id);
+    if (!rec) return;
+    setEditingId(rec.id);
+    setDescription(rec.description);
+    setAmount(String(rec.amount));
+    setDay(String(rec.day));
+    setType(rec.type);
+    setCategoryAccountId(rec.categoryAccountId);
+    setCounterAccountId(rec.counterAccountId);
+    setHint("Editando recorrência; salve ou cancele.");
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setDescription("");
+    setAmount("");
+    setDay("5");
+    setHint("Edição cancelada.");
   };
 
   return (
     <section className="ctaCard">
-      <h2 className="ctaTitle">Recorrências & Parcelas</h2>
-      <ul className="ctaList">
-        <li>Resumo dos próximos meses para visualizar compromissos.</li>
-        <li>Tipos: receita ou despesa; mapeia partidas automaticamente.</li>
-      </ul>
+      <div className="sectionHeader">
+        <div>
+          <h2 className="ctaTitle">Recorrências & Parcelas</h2>
+          <p className="appSubtitle">
+            Agenda de compromissos: quanto sai/entra a cada mês e quantas recorrências estão ativas.
+          </p>
+        </div>
+        <div className="pillRow">
+          <span className="pill success">Ativas: {activeCount}</span>
+          <span className="pill warning">Pausadas: {pausedCount}</span>
+        </div>
+      </div>
+
+      {!!monthDrift.length && (
+        <div className="recurrenceSummary">
+          {monthDrift.map((item) => (
+            <div key={item.month} className="summaryCard">
+              <p className="resultLabel">{item.month}</p>
+              <p className={item.amount >= 0 ? "textPositive" : "textNegative"}>
+                {formatCurrencyBRL(item.amount)}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="resultBox">
-        <span className="resultLabel">Cadastrar recorrência</span>
+        <span className="resultLabel">{editingId ? "Editar recorrência" : "Cadastrar recorrência"}</span>
         <div className="formGrid">
           <div className="formRow">
             <label htmlFor="recType">Tipo</label>
-            <select id="recType" value={type} onChange={(e) => setType(e.target.value as "expense" | "income")}>
+            <select
+              id="recType"
+              value={type}
+              onChange={(e) => setType(e.target.value as "expense" | "income")}
+              disabled={!!editingId}
+            >
               <option value="expense">Despesa</option>
               <option value="income">Receita</option>
             </select>
@@ -128,8 +206,13 @@ export function RecurrencesPage() {
             </select>
           </div>
           <button className="secondaryButton" type="button" onClick={submit}>
-            Adicionar
+            {editingId ? "Salvar" : "Adicionar"}
           </button>
+          {editingId && (
+            <button className="secondaryButton ghost" type="button" onClick={cancelEdit}>
+              Cancelar
+            </button>
+          )}
           <p className="inputHint">{hint}</p>
         </div>
       </div>
@@ -164,19 +247,45 @@ export function RecurrencesPage() {
 
       <div className="resultBox">
         <span className="resultLabel">Recorrências cadastradas</span>
-        <ul className="bulletList">
+        <div className="recurrenceList">
           {recurrences.map((rec) => {
             const cat = accountPlan.find((a) => a.id === rec.categoryAccountId)?.displayName ?? rec.categoryAccountId;
             const contra =
               accountPlan.find((a) => a.id === rec.counterAccountId)?.displayName ?? rec.counterAccountId;
             const toneClass = rec.type === "expense" ? "textExpense" : "textIncome";
             return (
-              <li key={rec.id} className={toneClass}>
-                {rec.description} — {formatCurrencyBRL(rec.amount)} todo dia {rec.day} ({cat} ↔ {contra})
-              </li>
+              <article key={rec.id} className={`recCard ${rec.isActive ? "" : "muted"}`}>
+                <div className="recMain">
+                  <div>
+                    <p className={`recTitle ${toneClass}`}>{rec.description}</p>
+                    <p className="recMeta">
+                      {formatCurrencyBRL(rec.amount)} no dia {rec.day} — {cat} ↔ {contra}
+                    </p>
+                  </div>
+                  <span className={`pill ${rec.isActive ? "success" : "warning"}`}>
+                    {rec.isActive ? "Ativa" : "Pausada"}
+                  </span>
+                </div>
+                <div className="recActions">
+                  <button className="chipButton" type="button" onClick={() => startEdit(rec.id)}>
+                    Editar
+                  </button>
+                  <button
+                    className="chipButton"
+                    type="button"
+                    onClick={() => toggleRecurrenceActive(rec.id, !rec.isActive)}
+                  >
+                    {rec.isActive ? "Pausar" : "Reativar"}
+                  </button>
+                  <button className="chipButton danger" type="button" onClick={() => deleteRecurrence(rec.id)}>
+                    Excluir
+                  </button>
+                </div>
+              </article>
             );
           })}
-        </ul>
+          {!recurrences.length && <p>Nenhuma recorrência ainda. Cadastre a primeira acima.</p>}
+        </div>
       </div>
     </section>
   );
