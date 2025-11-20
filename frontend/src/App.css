@@ -19,7 +19,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem;
+  padding: 0.5rem;
   overflow-x: hidden;
 }
 
@@ -29,15 +29,15 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-  padding: 0.95rem;
+  padding: 0.75rem;
   display: grid;
-  gap: 0.8rem;
+  gap: 0.6rem;
 }
 
 .navBar { /* (pt: barraNavegacao) */
   display: none;
   grid-template-columns: 1fr;
-  gap: 0.4rem;
+  gap: 0.3rem;
 }
 
 .navBar.open {
@@ -60,7 +60,7 @@ body {
   background: rgba(255, 255, 255, 0.12);
 }
 
- .appHeader { /* (pt: cabecalhoApp) */
+.appHeader { /* (pt: cabecalhoApp) */
   display: grid;
   gap: 0.45rem;
 }
@@ -82,7 +82,7 @@ body {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .headerButton { /* (pt: botaoCabecalho) */
@@ -112,10 +112,10 @@ body {
 .ctaCard { /* (pt: cartaoAcao) */
   background: var(--cardColor);
   border-radius: 16px;
-  padding: 0.85rem;
+  padding: 0.7rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   display: grid;
-  gap: 0.7rem;
+  gap: 0.55rem;
 }
 
 .ctaTitle { /* (pt: tituloAcao) */
@@ -176,7 +176,7 @@ body {
   background: rgba(255, 255, 255, 0.03);
   border: 1px dashed rgba(255, 255, 255, 0.15);
   border-radius: 12px;
-  padding: 0.75rem 0.9rem;
+  padding: 0.65rem 0.8rem;
   font-size: 0.95rem;
   line-height: 1.6;
   color: var(--textMain);
@@ -238,7 +238,7 @@ body {
 
 .formGrid { /* (pt: gradeFormulario) */
   display: grid;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 
 .formRow { /* (pt: linhaFormulario) */
@@ -247,15 +247,16 @@ body {
 }
 
 label { /* (pt: rotulo) */
-  font-size: 0.9rem;
-  color: var(--textMuted);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #eff5f6;
 }
 
 input[type="text"],
 input[type="number"],
 select { /* (pt: camposFormulario) */
   width: 100%;
-  padding: 0.55rem 0.7rem;
+  padding: 0.5rem 0.65rem;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.06);
