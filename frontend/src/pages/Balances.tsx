@@ -14,20 +14,22 @@ export function BalancesPage() {
   return (
     <section className="ctaCard">
       <h2 className="ctaTitle">Saldos por conta</h2>
-      <div className="resultBox" aria-live="polite">
-        <span className="resultLabel">Saldos</span>
+      <div className="cardList" aria-live="polite">
         {entries.map(({ acc, net, totals }) => (
-          <div key={acc.id} className={`accountGroup ${acc.isActive ? "" : "accountInactive"}`}>
-            <span className="resultLabel">
-              {acc.displayName} {acc.isActive ? "" : <span className="inactiveTag">(inativa)</span>}
-            </span>
-            <div>
-              Débito: {formatCurrencyBRL(totals.debit)} | Crédito: {formatCurrencyBRL(totals.credit)}
+          <article key={acc.id} className={`infoCard ${acc.isActive ? "" : "accountInactive"}`}>
+            <div className="infoHeader">
+              <span className="rowTitle">{acc.displayName}</span>
+              <span className={`pill ${net >= 0 ? "success" : "danger"}`}>
+                {net >= 0 ? "Positivo" : "Negativo"}
+              </span>
             </div>
-            <div className={net >= 0 ? "textPositive" : "textNegative"}>
-              Saldo (débito - crédito): {formatCurrencyBRL(net)}
+            <p className="rowMeta">{acc.id}</p>
+            <div className="entryAmounts">
+              <span className="badge debit">Débito: {formatCurrencyBRL(totals.debit)}</span>
+              <span className="badge credit">Crédito: {formatCurrencyBRL(totals.credit)}</span>
             </div>
-          </div>
+            <div className="rowValue">Saldo (débito - crédito): {formatCurrencyBRL(net)}</div>
+          </article>
         ))}
         {!entries.length && <div>Nenhum saldo ainda.</div>}
       </div>

@@ -16,7 +16,7 @@ export function OverviewPage() {
   return (
     <section className="ctaCard">
       <h2 className="ctaTitle">Overview</h2>
-      <div className="navBar" style={{ marginTop: "0.5rem" }}>
+      <div className="navBar" style={{ marginTop: "0.25rem" }}>
         <Link className="secondaryButton" to="/new">
           Novo lançamento
         </Link>
@@ -25,59 +25,83 @@ export function OverviewPage() {
         </Link>
       </div>
 
-      <div className="resultBox" aria-live="polite">
-        <span className="resultLabel">Resumo rápido</span>
-        <div className="textIncome">Capacidade mensal: {formatCurrencyBRL(monthlyCapacity)}</div>
-        <div className="textExpense">Despesa fixa total: {formatCurrencyBRL(totalFixedExpenses)}</div>
-        <div className={freeCashFlow >= 0 ? "textPositive" : "textNegative"}>
-          Fluxo de caixa livre: {formatCurrencyBRL(freeCashFlow)}
+      <div className="cardList" aria-live="polite">
+        <div className="infoCard">
+          <div className="infoHeader">
+            <span className="resultLabel">Resumo rápido</span>
+            <span className="pill neutral">Base mensal</span>
+          </div>
+          <div className="textIncome">Capacidade mensal: {formatCurrencyBRL(monthlyCapacity)}</div>
+          <div className="textExpense">Despesa fixa total: {formatCurrencyBRL(totalFixedExpenses)}</div>
+          <div className={freeCashFlow >= 0 ? "textPositive" : "textNegative"}>
+            Fluxo de caixa livre: {formatCurrencyBRL(freeCashFlow)}
+          </div>
+          <div className="textPositive">Meta de poupança (3%): {formatCurrencyBRL(targetSavings)}</div>
         </div>
-        <div className="textPositive">Meta de poupança (3%): {formatCurrencyBRL(targetSavings)}</div>
-      </div>
 
-      <div className="resultBox">
-        <span className="resultLabel">Últimos lançamentos</span>
-        {recent.length === 0 && <div>Nenhum lançamento ainda.</div>}
-        {recent.map((entry) => {
-          const debitTotal = entry.lines.reduce((sum, line) => sum + line.debit, 0);
-          const creditTotal = entry.lines.reduce((sum, line) => sum + line.credit, 0);
-          const isBalanced = debitTotal === creditTotal;
-          return (
-            <div className="accountGroup" key={entry.id}>
-              <span className="resultLabel">
-                {entry.id} — {entry.description}
-              </span>
-              <div className={isBalanced ? "textPositive" : "textNegative"}>
-                {isBalanced ? "Balanceado" : "Não balanceado"} ({formatCurrencyBRL(debitTotal)} vs{" "}
-                {formatCurrencyBRL(creditTotal)})
-              </div>
-            </div>
-          );
-        })}
-        <div className="footerNote">
-          {lastSavedAt ? `Último salvamento: ${new Date(lastSavedAt).toLocaleString("pt-BR")}` : "Ainda não salvo"}
+        <div className="infoCard">
+          <div className="infoHeader">
+            <span className="resultLabel">Últimos lançamentos</span>
+            <Link className="pill neutral" to="/journal">
+              Ver todos
+            </Link>
+          </div>
+          {recent.length === 0 && <div>Nenhum lançamento ainda.</div>}
+          <div className="entryList">
+            {recent.map((entry) => {
+              const debitTotal = entry.lines.reduce((sum, line) => sum + line.debit, 0);
+              const creditTotal = entry.lines.reduce((sum, line) => sum + line.credit, 0);
+              const isBalanced = debitTotal === creditTotal;
+              return (
+                <article className="entryCard" key={entry.id}>
+                  <div className="entryHeader">
+                    <div>
+                      <p className="recTitle">{entry.description}</p>
+                      <p className="recMeta">
+                        {entry.id} • {entry.lines.length} linhas • Total: {formatCurrencyBRL(debitTotal)}
+                      </p>
+                    </div>
+                    <span className={`pill ${isBalanced ? "success" : "danger"}`}>
+                      {isBalanced ? "Balanceado" : "Diferença"}
+                    </span>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+          <div className="footerNote">
+            {lastSavedAt ? `Último salvamento: ${new Date(lastSavedAt).toLocaleString("pt-BR")}` : "Ainda não salvo"}
+          </div>
         </div>
-      </div>
 
-      <div className="resultBox">
-        <span className="resultLabel">Saldo de caixa rápido</span>
-        {accountPlan
-          .filter((acc) => balances.has(acc.id) && acc.type === "Asset")
-          .map((acc) => {
-            const totals = balances.get(acc.id)!;
-            const net = totals.debit - totals.credit;
-            return (
-              <div key={acc.id} className={`accountGroup ${acc.isActive ? "" : "accountInactive"}`}>
-                <span className="resultLabel">
-                  {acc.displayName} {acc.isActive ? "" : <span className="inactiveTag">(inativa)</span>}
-                </span>
-                <div className={net >= 0 ? "textPositive" : "textNegative"}>{formatCurrencyBRL(net)}</div>
-              </div>
-            );
-          })}
-        {!Array.from(balances.keys()).some((id) => accountPlan.find((a) => a.id === id)?.type === "Asset") && (
-          <div>Nenhum saldo ainda.</div>
-        )}
+        <div className="infoCard">
+          <div className="infoHeader">
+            <span className="resultLabel">Saldo de caixa rápido</span>
+            <span className="pill neutral">Ativos</span>
+          </div>
+          <div className="cardList">
+            {accountPlan
+              .filter((acc) => balances.has(acc.id) && acc.type === "Asset")
+              .map((acc) => {
+                const totals = balances.get(acc.id)!;
+                const net = totals.debit - totals.credit;
+                return (
+                  <div key={acc.id} className={`accountRow ${acc.isActive ? "" : "accountInactive"}`}>
+                    <div>
+                      <p className="rowTitle">{acc.displayName}</p>
+                      <p className="rowMeta">Saldo: {formatCurrencyBRL(net)}</p>
+                    </div>
+                    <span className={`pill ${net >= 0 ? "success" : "danger"}`}>
+                      {net >= 0 ? "Positivo" : "Negativo"}
+                    </span>
+                  </div>
+                );
+              })}
+          </div>
+          {!Array.from(balances.keys()).some((id) => accountPlan.find((a) => a.id === id)?.type === "Asset") && (
+            <div>Nenhum saldo ainda.</div>
+          )}
+        </div>
       </div>
     </section>
   );

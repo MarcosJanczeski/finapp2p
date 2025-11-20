@@ -11,20 +11,27 @@ export function AccountsPage() {
   return (
     <section className="ctaCard">
       <h2 className="ctaTitle">Plano de contas</h2>
-      <div className="resultBox" aria-live="polite">
-        <span className="resultLabel">Contas por tipo</span>
+      <div className="cardList" aria-live="polite">
         {Object.entries(grouped).map(([type, accounts]) => (
-          <div className="accountGroup" key={type}>
-            <span className="resultLabel">{typeAccountLabel[type] || type}</span>
-            <ul className="bulletList">
+          <article className="infoCard" key={type}>
+            <div className="infoHeader">
+              <span className="resultLabel">{typeAccountLabel[type] || type}</span>
+              <span className="pill neutral">{accounts.length} contas</span>
+            </div>
+            <div className="cardList">
               {accounts.map((acc) => (
-                <li key={acc.id} className={acc.isActive ? "" : "accountInactive"}>
-                  <strong>{acc.id}</strong> — {acc.displayName}{" "}
-                  {acc.isActive ? "" : <span className="inactiveTag">(inativa)</span>}
-                </li>
+                <div key={acc.id} className={`accountRow ${acc.isActive ? "" : "accountInactive"}`}>
+                  <div>
+                    <p className="rowTitle">{acc.displayName}</p>
+                    <p className="rowMeta">{acc.id}</p>
+                  </div>
+                  <span className={`pill ${acc.isActive ? "success" : "warning"}`}>
+                    {acc.isActive ? "Ativa" : "Inativa"}
+                  </span>
+                </div>
               ))}
-            </ul>
-          </div>
+            </div>
+          </article>
         ))}
       </div>
     </section>
