@@ -5,6 +5,7 @@ import { JournalPage } from "./pages/Journal";
 import { NewEntryPage } from "./pages/NewEntry";
 import { OverviewPage } from "./pages/Overview";
 import { AccountsPage } from "./pages/Accounts";
+import { RecurrencesPage } from "./pages/Recurrences";
 
 function App() {
   return (
@@ -39,6 +40,12 @@ function App() {
           >
             Saldos
           </NavLink>
+          <NavLink
+            to="/recurrences"
+            className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
+          >
+            Recorrências
+          </NavLink>
         </nav>
       </header>
 
@@ -48,6 +55,7 @@ function App() {
         <Route path="/journal" element={<JournalPage />} />
         <Route path="/accounts" element={<AccountsPage />} />
         <Route path="/balances" element={<BalancesPage />} />
+        <Route path="/recurrences" element={<RecurrencesPage />} />
       </Routes>
     </div>
   );

@@ -25,6 +25,31 @@ export type QuickEntryType =
   | "installment_purchase"
   | "loan_installment"; // (pt: tiposLancamentoRapido)
 
+export type RecurrenceType = "expense" | "income"; // (pt: tipoRecorrencia)
+
+export type Recurrence = { // (pt: Recorrencia)
+  id: string; // (pt: id)
+  description: string; // (pt: descricao)
+  amount: number; // (pt: valor)
+  day: number; // (pt: diaVencimento)
+  type: RecurrenceType; // (pt: tipo)
+  categoryAccountId: string; // (pt: contaCategoria)
+  counterAccountId: string; // (pt: contaContraPartida)
+  startDate: string; // ISO (pt: inicio)
+  endDate?: string; // ISO opcional (pt: fim)
+}; // (pt: Recorrencia)
+
+export type RecurrenceOccurrence = { // (pt: OcorrenciaRecorrencia)
+  id: string; // (pt: idOcorrencia)
+  recurrenceId: string; // (pt: idRecorrencia)
+  description: string; // (pt: descricao)
+  amount: number; // (pt: valor)
+  date: string; // ISO (pt: data)
+  type: RecurrenceType; // (pt: tipo)
+  categoryAccountId: string; // (pt: contaCategoria)
+  counterAccountId: string; // (pt: contaContraPartida)
+};
+
 type QuickEntryPayload = { // (pt: DadosLancamentoRapido)
   description: string; // (pt: descricao)
   amount: number; // (pt: valor)
@@ -45,6 +70,8 @@ type FinanceContextValue = { // (pt: ContextoFinancas)
   journalEntries: JournalEntry[]; // (pt: lancamentos)
   lastSavedAt: string | null; // (pt: ultimoSalvo)
   balances: Map<string, { debit: number; credit: number }>; // (pt: saldos)
+  recurrences: Recurrence[]; // (pt: recorrencias)
+  upcomingRecurrences: RecurrenceOccurrence[]; // (pt: recorrenciasPrevistas)
   saveMonth: () => void; // (pt: salvarMes)
   loadMonth: () => void; // (pt: carregarMes)
   addQuickEntry: (payload: QuickEntryPayload) => void; // (pt: adicionarLancamentoRapido)
@@ -120,6 +147,39 @@ const initialJournalEntries: JournalEntry[] = [
     ],
   },
 ];
+
+const recurrencesSeed: Recurrence[] = [
+  {
+    id: "R1",
+    description: "Aluguel",
+    amount: 1650,
+    day: 5,
+    type: "expense",
+    categoryAccountId: "X1",
+    counterAccountId: "A1",
+    startDate: "2024-01-01",
+  },
+  {
+    id: "R2",
+    description: "Salário",
+    amount: 12000,
+    day: 3,
+    type: "income",
+    categoryAccountId: "I1",
+    counterAccountId: "A2",
+    startDate: "2024-01-01",
+  },
+  {
+    id: "R3",
+    description: "Internet",
+    amount: 139.9,
+    day: 10,
+    type: "expense",
+    categoryAccountId: "X2",
+    counterAccountId: "A2",
+    startDate: "2024-01-01",
+  },
+]; // (pt: recorrenciasExemplo)
 
 function getMonthKey(date = new Date()) { // (pt: obterChaveMes)
   const year = date.getFullYear();
@@ -229,6 +289,34 @@ function mapQuickEntryToLines(payload: QuickEntryPayload): JournalLine[] { // (p
   ];
 }
 
+function generateRecurrenceOccurrences(recurrences: Recurrence[], monthsAhead = 2): RecurrenceOccurrence[] { // (pt: gerarOcorrenciasRecorrencias)
+  const now = new Date();
+  const startYear = now.getFullYear();
+  const startMonth = now.getMonth(); // 0-based
+  const occurrences: RecurrenceOccurrence[] = [];
+
+  recurrences.forEach((rec) => {
+    for (let i = 0; i <= monthsAhead; i += 1) {
+      const monthDate = new Date(startYear, startMonth + i, rec.day);
+      const iso = monthDate.toISOString().slice(0, 10);
+      if (rec.startDate && iso < rec.startDate.slice(0, 10)) continue;
+      if (rec.endDate && iso > rec.endDate.slice(0, 10)) continue;
+      occurrences.push({
+        id: `${rec.id}-${iso}`,
+        recurrenceId: rec.id,
+        description: rec.description,
+        amount: rec.amount,
+        date: iso,
+        type: rec.type,
+        categoryAccountId: rec.categoryAccountId,
+        counterAccountId: rec.counterAccountId,
+      });
+    }
+  });
+
+  return occurrences.sort((a, b) => a.date.localeCompare(b.date));
+}
+
 export function useFinance() {
   const ctx = useContext(FinanceContext);
   if (!ctx) throw new Error("FinanceContext not found");
@@ -239,8 +327,10 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) { /
   const initial = loadFromStorage();
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>(initial?.entries ?? initialJournalEntries);
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(initial?.savedAt ?? null);
+  const [recurrences] = useState<Recurrence[]>(recurrencesSeed);
 
   const balances = useMemo(() => computeBalances(journalEntries), [journalEntries]);
+  const upcomingRecurrences = useMemo(() => generateRecurrenceOccurrences(recurrences), [recurrences]);
 
   const saveMonth = () => { // (pt: salvarMes)
     const key = `${STORAGE_KEY_JOURNAL_PREFIX}${getMonthKey()}`;
@@ -298,6 +388,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) { /
     journalEntries,
     lastSavedAt,
     balances,
+    recurrences,
+    upcomingRecurrences,
     saveMonth,
     loadMonth,
     addQuickEntry,
