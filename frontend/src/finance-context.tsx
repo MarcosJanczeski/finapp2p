@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useMemo, useState } from "react";
 
 export type AccountType = "Asset" | "Liability" | "Equity" | "Income" | "Expense"; // (pt: tiposConta)
 export type AssetGroup = "Availability" | "Rights" | "Goods"; // (pt: gruposAtivo)
@@ -144,6 +145,30 @@ function computeBalances(entries: JournalEntry[]) { // (pt: calcularSaldos)
   return totals;
 }
 
+function loadFromStorage() { // (pt: carregarDoStorage)
+  if (typeof localStorage === "undefined") return null;
+  const key = `${STORAGE_KEY_JOURNAL_PREFIX}${getMonthKey()}`;
+  const raw = localStorage.getItem(key);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    let entries: JournalEntry[] = parsed;
+    let savedAt: string | null = null;
+    if (!Array.isArray(parsed)) {
+      if (parsed && Array.isArray(parsed.entries)) {
+        entries = parsed.entries;
+        savedAt = parsed.savedAt ?? null;
+      } else {
+        return null;
+      }
+    }
+    return { entries, savedAt };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 function formatCurrencyBRL(value: number) { // (pt: formatarMoedaBRL)
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
@@ -211,33 +236,11 @@ export function useFinance() {
 }
 
 export function FinanceProvider({ children }: { children: React.ReactNode }) { // (pt: ProvedorFinancas)
-  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>(initialJournalEntries);
-  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const initial = loadFromStorage();
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>(initial?.entries ?? initialJournalEntries);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(initial?.savedAt ?? null);
 
   const balances = useMemo(() => computeBalances(journalEntries), [journalEntries]);
-
-  useEffect(() => {
-    const key = `${STORAGE_KEY_JOURNAL_PREFIX}${getMonthKey()}`;
-    const raw = typeof localStorage !== "undefined" ? localStorage.getItem(key) : null;
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw);
-      let entries: JournalEntry[] = parsed;
-      let savedAt: string | null = null;
-      if (!Array.isArray(parsed)) {
-        if (parsed && Array.isArray(parsed.entries)) {
-          entries = parsed.entries;
-          savedAt = parsed.savedAt ?? null;
-        } else {
-          return;
-        }
-      }
-      setJournalEntries(entries);
-      setLastSavedAt(savedAt);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
 
   const saveMonth = () => { // (pt: salvarMes)
     const key = `${STORAGE_KEY_JOURNAL_PREFIX}${getMonthKey()}`;
