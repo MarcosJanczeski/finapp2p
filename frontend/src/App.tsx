@@ -1,77 +1,65 @@
+import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import "./App.css";
 
 function App() {
+  const [menuOpen, setMenuOpen] = useState(false); // (pt: menuAberto)
+  const closeMenu = () => setMenuOpen(false); // (pt: fecharMenu)
+
   return (
     <div className="appShell">
       <header className="appHeader">
-        <p className="appSubtitle">
-          Mobile-first para lançamentos rápidos com dupla entrada automática.
-        </p>
+        <p className="appSubtitle">Mobile-first: lançamentos rápidos com dupla entrada automática.</p>
         <h1 className="appTitle">Finanças 2P — React + TS</h1>
-        <nav className="navBar" aria-label="Navegação">
-          <NavLink to="/" className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}>
+        <button type="button" className="secondaryButton" onClick={() => setMenuOpen((v) => !v)} aria-expanded={menuOpen}>
+          {menuOpen ? "Fechar menu" : "Menu"}
+        </button>
+        <nav className={`navBar ${menuOpen ? "open" : ""}`} aria-label="Navegação principal">
+          <NavLink
+            to="/"
+            className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
+            onClick={closeMenu}
+          >
             Overview
           </NavLink>
-          <NavLink to="/new" className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}>
+          <NavLink
+            to="/new"
+            className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
+            onClick={closeMenu}
+          >
             Novo
           </NavLink>
           <NavLink
             to="/journal"
             className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
+            onClick={closeMenu}
           >
             Lançamentos
           </NavLink>
           <NavLink
             to="/accounts"
             className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
+            onClick={closeMenu}
           >
             Plano
           </NavLink>
           <NavLink
             to="/balances"
             className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
+            onClick={closeMenu}
           >
             Saldos
           </NavLink>
           <NavLink
             to="/recurrences"
             className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
+            onClick={closeMenu}
           >
             Recorrências
           </NavLink>
         </nav>
       </header>
       <Outlet />
-      <footer className="bottomNav" aria-label="Navegação inferior">
-        <NavLink to="/" className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}>
-          Overview
-        </NavLink>
-        <NavLink
-          to="/new"
-          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
-        >
-          Novo
-        </NavLink>
-        <NavLink
-          to="/journal"
-          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
-        >
-          Lançamentos
-        </NavLink>
-        <NavLink
-          to="/balances"
-          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
-        >
-          Saldos
-        </NavLink>
-        <NavLink
-          to="/recurrences"
-          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
-        >
-          Recorrências
-        </NavLink>
-      </footer>
     </div>
   );
 }
