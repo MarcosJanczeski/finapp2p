@@ -134,133 +134,143 @@ export function RecurrencesPage() {
       {!!monthDrift.length && (
         <div className="recurrenceSummary">
           {monthDrift.map((item) => (
-            <div key={item.month} className="summaryCard">
-              <p className="resultLabel">{item.month}</p>
+            <article key={item.month} className="infoCard">
+              <div className="infoHeader">
+                <p className="resultLabel">{item.month}</p>
+                <span className={`pill ${item.amount >= 0 ? "success" : "danger"}`}>
+                  {item.amount >= 0 ? "Entrada > Saída" : "Saída > Entrada"}
+                </span>
+              </div>
               <p className={item.amount >= 0 ? "textPositive" : "textNegative"}>
                 {formatCurrencyBRL(item.amount)}
               </p>
-            </div>
+            </article>
           ))}
         </div>
       )}
 
-      <div className="resultBox">
-        <span className="resultLabel">{editingId ? "Editar recorrência" : "Cadastrar recorrência"}</span>
-        <div className="formGrid">
-          <div className="formRow">
-            <label htmlFor="recFrequency">Frequência</label>
-            <select
-              id="recFrequency"
-              value={frequency}
-              onChange={(e) => setFrequency(e.target.value as "monthly" | "weekly")}
-            >
-              <option value="monthly">Mensal</option>
-              <option value="weekly">Semanal</option>
-            </select>
+      <div className="cardList">
+        <article className="infoCard">
+          <div className="infoHeader">
+            <span className="resultLabel">{editingId ? "Editar recorrência" : "Cadastrar recorrência"}</span>
+            <span className="pill neutral">Auto gera agenda</span>
           </div>
-          <div className="formRow">
-            <label htmlFor="recType">Tipo</label>
-            <select
-              id="recType"
-              value={type}
-              onChange={(e) => setType(e.target.value as "expense" | "income")}
-              disabled={!!editingId}
-            >
-              <option value="expense">Despesa</option>
-              <option value="income">Receita</option>
-            </select>
-          </div>
-          <div className="formRow">
-            <label htmlFor="recDesc">Descrição</label>
-            <input
-              id="recDesc"
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Ex.: Academia"
-            />
-          </div>
-          <div className="formRow">
-            <label htmlFor="recAmount">Valor (R$)</label>
-            <input
-              id="recAmount"
-              type="number"
-              step="0.01"
-              min="0"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-          <div className="formRow">
-            {frequency === "monthly" ? (
-              <>
-                <label htmlFor="recDay">Dia do mês</label>
-                <input
-                  id="recDay"
-                  type="number"
-                  min="1"
-                  max="28"
-                  value={day}
-                  onChange={(e) => setDay(e.target.value)}
-                />
-              </>
-            ) : (
-              <>
-                <label htmlFor="recWeekday">Dia da semana</label>
-                <select id="recWeekday" value={weekday} onChange={(e) => setWeekday(e.target.value)}>
-                  <option value="1">Segunda</option>
-                  <option value="2">Terça</option>
-                  <option value="3">Quarta</option>
-                  <option value="4">Quinta</option>
-                  <option value="5">Sexta</option>
-                  <option value="6">Sábado</option>
-                  <option value="0">Domingo</option>
-                </select>
-              </>
-            )}
-          </div>
-          <div className="formRow">
-            <label htmlFor="recCategory">{type === "expense" ? "Categoria de despesa" : "Categoria de receita"}</label>
-            <select
-              id="recCategory"
-              value={categoryAccountId}
-              onChange={(e) => setCategoryAccountId(e.target.value)}
-            >
-              {accountPlan
-                .filter((acc) => acc.type === (type === "expense" ? "Expense" : "Income"))
-                .map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.displayName}
-                    {acc.isActive ? "" : " (inativa)"}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <div className="formRow">
-            <label htmlFor="recCounter">
-              {type === "expense" ? "Pagar de (Ativo/Passivo)" : "Receber em (Ativo)"}
-            </label>
-            <select id="recCounter" value={counterAccountId} onChange={(e) => setCounterAccountId(e.target.value)}>
-              {accountPlan
-                .filter((acc) => (type === "expense" ? acc.type === "Asset" || acc.type === "Liability" : acc.type === "Asset"))
-                .map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.displayName}
-                    {acc.isActive ? "" : " (inativa)"}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <button className="secondaryButton" type="button" onClick={submit}>
-            {editingId ? "Salvar" : "Adicionar"}
-          </button>
-          {editingId && (
-            <button className="secondaryButton ghost" type="button" onClick={cancelEdit}>
-              Cancelar
+          <div className="formGrid">
+            <div className="formRow">
+              <label htmlFor="recFrequency">Frequência</label>
+              <select
+                id="recFrequency"
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value as "monthly" | "weekly")}
+              >
+                <option value="monthly">Mensal</option>
+                <option value="weekly">Semanal</option>
+              </select>
+            </div>
+            <div className="formRow">
+              <label htmlFor="recType">Tipo</label>
+              <select
+                id="recType"
+                value={type}
+                onChange={(e) => setType(e.target.value as "expense" | "income")}
+                disabled={!!editingId}
+              >
+                <option value="expense">Despesa</option>
+                <option value="income">Receita</option>
+              </select>
+            </div>
+            <div className="formRow">
+              <label htmlFor="recDesc">Descrição</label>
+              <input
+                id="recDesc"
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Ex.: Academia"
+              />
+            </div>
+            <div className="formRow">
+              <label htmlFor="recAmount">Valor (R$)</label>
+              <input
+                id="recAmount"
+                type="number"
+                step="0.01"
+                min="0"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+            </div>
+            <div className="formRow">
+              {frequency === "monthly" ? (
+                <>
+                  <label htmlFor="recDay">Dia do mês</label>
+                  <input
+                    id="recDay"
+                    type="number"
+                    min="1"
+                    max="28"
+                    value={day}
+                    onChange={(e) => setDay(e.target.value)}
+                  />
+                </>
+              ) : (
+                <>
+                  <label htmlFor="recWeekday">Dia da semana</label>
+                  <select id="recWeekday" value={weekday} onChange={(e) => setWeekday(e.target.value)}>
+                    <option value="1">Segunda</option>
+                    <option value="2">Terça</option>
+                    <option value="3">Quarta</option>
+                    <option value="4">Quinta</option>
+                    <option value="5">Sexta</option>
+                    <option value="6">Sábado</option>
+                    <option value="0">Domingo</option>
+                  </select>
+                </>
+              )}
+            </div>
+            <div className="formRow">
+              <label htmlFor="recCategory">{type === "expense" ? "Categoria de despesa" : "Categoria de receita"}</label>
+              <select
+                id="recCategory"
+                value={categoryAccountId}
+                onChange={(e) => setCategoryAccountId(e.target.value)}
+              >
+                {accountPlan
+                  .filter((acc) => acc.type === (type === "expense" ? "Expense" : "Income"))
+                  .map((acc) => (
+                    <option key={acc.id} value={acc.id}>
+                      {acc.displayName}
+                      {acc.isActive ? "" : " (inativa)"}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <div className="formRow">
+              <label htmlFor="recCounter">
+                {type === "expense" ? "Pagar de (Ativo/Passivo)" : "Receber em (Ativo)"}
+              </label>
+              <select id="recCounter" value={counterAccountId} onChange={(e) => setCounterAccountId(e.target.value)}>
+                {accountPlan
+                  .filter((acc) => (type === "expense" ? acc.type === "Asset" || acc.type === "Liability" : acc.type === "Asset"))
+                  .map((acc) => (
+                    <option key={acc.id} value={acc.id}>
+                      {acc.displayName}
+                      {acc.isActive ? "" : " (inativa)"}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <button className="secondaryButton" type="button" onClick={submit}>
+              {editingId ? "Salvar" : "Adicionar"}
             </button>
-          )}
-          <p className="inputHint">{hint}</p>
-        </div>
+            {editingId && (
+              <button className="secondaryButton ghost" type="button" onClick={cancelEdit}>
+                Cancelar
+              </button>
+            )}
+            <p className="inputHint">{hint}</p>
+          </div>
+        </article>
       </div>
 
       <div className="resultBox">
