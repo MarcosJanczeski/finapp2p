@@ -392,6 +392,83 @@ input[type="number"]::-webkit-inner-spin-button {
   color: #ff8e6e;
 }
 
+.entryList { /* (pt: listaLancamentos) */
+  display: grid;
+  gap: 0.55rem;
+}
+
+.entryCard { /* (pt: cartaoLancamento) */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  display: grid;
+  gap: 0.45rem;
+}
+
+.entryHeader { /* (pt: cabecalhoLancamento) */
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.entryDiff { /* (pt: diferencaLancamento) */
+  margin: 0;
+  font-weight: 600;
+}
+
+.entryLines { /* (pt: linhasLancamento) */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.entryLine { /* (pt: linhaLancamento) */
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.35rem 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.entryAccount { /* (pt: contaLancamento) */
+  margin: 0;
+  font-weight: 700;
+}
+
+.entryAmounts { /* (pt: valoresLancamento) */
+  display: grid;
+  gap: 0.2rem;
+  justify-items: end;
+}
+
+.badge { /* (pt: seloValor) */
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+  color: var(--textMain);
+  display: inline-block;
+}
+
+.badge.debit { /* (pt: seloDebito) */
+  background: rgba(159, 232, 112, 0.1);
+  border-color: rgba(159, 232, 112, 0.35);
+  color: #9fe870;
+}
+
+.badge.credit { /* (pt: seloCredito) */
+  background: rgba(245, 163, 163, 0.1);
+  border-color: rgba(245, 163, 163, 0.35);
+  color: #f5a3a3;
+}
+
 .settingsOverlay { /* (pt: sobreposicaoConfiguracoes) */
   position: fixed;
   inset: 0;
