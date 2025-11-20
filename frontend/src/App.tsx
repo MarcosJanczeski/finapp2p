@@ -1,11 +1,5 @@
-import { NavLink, Route, Routes } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import "./App.css";
-import { BalancesPage } from "./pages/Balances";
-import { JournalPage } from "./pages/Journal";
-import { NewEntryPage } from "./pages/NewEntry";
-import { OverviewPage } from "./pages/Overview";
-import { AccountsPage } from "./pages/Accounts";
-import { RecurrencesPage } from "./pages/Recurrences";
 
 function App() {
   return (
@@ -48,15 +42,7 @@ function App() {
           </NavLink>
         </nav>
       </header>
-
-      <Routes>
-        <Route path="/" element={<OverviewPage />} />
-        <Route path="/new" element={<NewEntryPage />} />
-        <Route path="/journal" element={<JournalPage />} />
-        <Route path="/accounts" element={<AccountsPage />} />
-        <Route path="/balances" element={<BalancesPage />} />
-        <Route path="/recurrences" element={<RecurrencesPage />} />
-      </Routes>
+      <Outlet />
     </div>
   );
 }
