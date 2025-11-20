@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { QuickEntryType } from "../finance-context";
 import { accountPlan, useFinance } from "../finance-context";
 
 export function NewEntryPage() {
   const { addQuickEntry } = useFinance();
-  const defaultAssetId = accountPlan.find((a) => a.type === "Asset")?.id ?? "";
-  const defaultLiabilityId = accountPlan.find((a) => a.type === "Liability")?.id ?? "";
+  const defaultAssetId = useMemo(() => accountPlan.find((a) => a.type === "Asset")?.id ?? "", []);
+  const defaultLiabilityId = useMemo(() => accountPlan.find((a) => a.type === "Liability")?.id ?? "", []);
+  const defaultExpenseId = useMemo(() => accountPlan.find((a) => a.type === "Expense")?.id ?? "", []);
+  const defaultIncomeId = useMemo(() => accountPlan.find((a) => a.type === "Income")?.id ?? "", []);
   const [quickType, setQuickType] = useState<QuickEntryType>("expense");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
@@ -23,6 +25,31 @@ export function NewEntryPage() {
   ); // (pt: mensagemDica)
   const [hintTone, setHintTone] = useState<"neutral" | "ok" | "error">("neutral");
 
+  useEffect(() => {
+    // (pt: ajustarCamposPorTipo)
+    setHintTone("neutral");
+    setParcelCount("1");
+    if (quickType === "expense") {
+      setPayFromId((prev) => prev || defaultAssetId || defaultLiabilityId);
+      setExpenseCategoryId((prev) => prev || defaultExpenseId);
+    } else if (quickType === "income") {
+      setReceiveInId((prev) => prev || defaultAssetId);
+      setIncomeCategoryId((prev) => prev || defaultIncomeId);
+    } else if (quickType === "transfer") {
+      setTransferFromId((prev) => prev || defaultAssetId);
+      setTransferToId((prev) => prev || defaultAssetId);
+    } else if (quickType === "card_purchase" || quickType === "installment_purchase") {
+      setCardAccountId((prev) => prev || defaultLiabilityId || defaultAssetId);
+      setExpenseCategoryId((prev) => prev || defaultExpenseId);
+    } else if (quickType === "card_payment") {
+      setCardAccountId((prev) => prev || defaultLiabilityId || defaultAssetId);
+      setPayFromId((prev) => prev || defaultAssetId);
+    } else if (quickType === "loan_installment") {
+      setLoanAccountId((prev) => prev || defaultLiabilityId || defaultAssetId);
+      setPayFromId((prev) => prev || defaultAssetId);
+    }
+  }, [quickType, defaultAssetId, defaultLiabilityId, defaultExpenseId, defaultIncomeId]);
+
   const submit = () => {
     const trimmedDesc = description.trim();
     const numericAmount = parseFloat(amount);
@@ -38,6 +65,34 @@ export function NewEntryPage() {
     }
     if (quickType === "transfer" && transferFromId === transferToId) {
       setHintMessage("Transferência precisa de contas diferentes.");
+      setHintTone("error");
+      return;
+    }
+    if (quickType === "expense" && (!expenseCategoryId || !payFromId)) {
+      setHintMessage("Escolha a categoria e a conta de pagamento.");
+      setHintTone("error");
+      return;
+    }
+    if (quickType === "income" && (!incomeCategoryId || !receiveInId)) {
+      setHintMessage("Escolha a categoria e a conta de recebimento.");
+      setHintTone("error");
+      return;
+    }
+    if (
+      (quickType === "card_purchase" || quickType === "installment_purchase") &&
+      (!cardAccountId || !expenseCategoryId)
+    ) {
+      setHintMessage("Escolha o cartão e a categoria.");
+      setHintTone("error");
+      return;
+    }
+    if (quickType === "card_payment" && (!cardAccountId || !payFromId)) {
+      setHintMessage("Escolha o cartão e a conta pagadora.");
+      setHintTone("error");
+      return;
+    }
+    if (quickType === "loan_installment" && (!loanAccountId || !payFromId)) {
+      setHintMessage("Escolha a conta do empréstimo e a conta pagadora.");
       setHintTone("error");
       return;
     }
