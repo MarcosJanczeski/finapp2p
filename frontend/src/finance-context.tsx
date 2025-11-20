@@ -75,6 +75,7 @@ type FinanceContextValue = { // (pt: ContextoFinancas)
   saveMonth: () => void; // (pt: salvarMes)
   loadMonth: () => void; // (pt: carregarMes)
   addQuickEntry: (payload: QuickEntryPayload) => void; // (pt: adicionarLancamentoRapido)
+  addRecurrence: (rec: Omit<Recurrence, "id">) => void; // (pt: adicionarRecorrencia)
 };
 
 const FinanceContext = createContext<FinanceContextValue | null>(null);
@@ -229,6 +230,27 @@ function loadFromStorage() { // (pt: carregarDoStorage)
   }
 }
 
+function loadRecurrencesFromStorage(): Recurrence[] { // (pt: carregarRecorrenciasDoStorage)
+  if (typeof localStorage === "undefined") return recurrencesSeed;
+  const key = `${storagePrefix}:recurrences`;
+  const raw = localStorage.getItem(key);
+  if (!raw) return recurrencesSeed;
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+    return recurrencesSeed;
+  } catch (error) {
+    console.error(error);
+    return recurrencesSeed;
+  }
+}
+
+function saveRecurrencesToStorage(recs: Recurrence[]) { // (pt: salvarRecorrenciasNoStorage)
+  if (typeof localStorage === "undefined") return;
+  const key = `${storagePrefix}:recurrences`;
+  localStorage.setItem(key, JSON.stringify(recs));
+}
+
 function formatCurrencyBRL(value: number) { // (pt: formatarMoedaBRL)
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
@@ -327,7 +349,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) { /
   const initial = loadFromStorage();
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>(initial?.entries ?? initialJournalEntries);
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(initial?.savedAt ?? null);
-  const [recurrences] = useState<Recurrence[]>(recurrencesSeed);
+  const [recurrences, setRecurrences] = useState<Recurrence[]>(loadRecurrencesFromStorage());
 
   const balances = useMemo(() => computeBalances(journalEntries), [journalEntries]);
   const upcomingRecurrences = useMemo(() => generateRecurrenceOccurrences(recurrences), [recurrences]);
@@ -393,6 +415,14 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) { /
     saveMonth,
     loadMonth,
     addQuickEntry,
+    addRecurrence(rec) {
+      const newRec: Recurrence = { ...rec, id: `R${Date.now()}` };
+      setRecurrences((prev) => {
+        const updated = [...prev, newRec];
+        saveRecurrencesToStorage(updated);
+        return updated;
+      });
+    },
   };
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>;
