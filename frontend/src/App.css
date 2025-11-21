@@ -32,6 +32,7 @@ body {
   padding: 0.75rem;
   display: grid;
   gap: 0.6rem;
+  padding-bottom: 4.5rem;
 }
 
 .navBar { /* (pt: barraNavegacao) */
@@ -390,6 +391,63 @@ input[type="number"]::-webkit-inner-spin-button {
 .chipButton.danger { /* (pt: botaoChipPerigo) */
   border-color: rgba(255, 142, 110, 0.4);
   color: #ff8e6e;
+}
+
+.bottomNav { /* (pt: barraInferior) */
+  position: fixed;
+  bottom: 0.35rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(520px, 94vw);
+  background: rgba(10, 20, 24, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  border-radius: 16px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  padding: 0.35rem 0.25rem;
+  backdrop-filter: blur(10px);
+  z-index: 15;
+}
+
+.bottomLink { /* (pt: linkInferior) */
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  padding: 0.25rem 0.35rem;
+  color: var(--textMuted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.bottomLink .icon { /* (pt: iconeInferior) */
+  font-size: 1.05rem;
+}
+
+.bottomLink.active { /* (pt: linkInferiorAtivo) */
+  color: var(--textMain);
+}
+
+.fab { /* (pt: botaoFlutuante) */
+  position: fixed;
+  bottom: 3.1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e09b3d, #f6d365);
+  color: #0b1a1f;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1.7rem;
+  text-decoration: none;
+  border: none;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+  z-index: 16;
 }
 
 .entryList { /* (pt: listaLancamentos) */

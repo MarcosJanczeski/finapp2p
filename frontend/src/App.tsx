@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import "./App.css";
 
 type SettingsPanelProps = {
@@ -182,53 +182,54 @@ function App() {
           </button>
         </div>
         <p className="appSubtitle">Mobile-first: lançamentos rápidos com dupla entrada automática.</p>
-        <nav className={`navBar ${menuOpen ? "open" : ""}`} aria-label="Navegação principal">
-          <NavLink
-            to="/"
-            className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
-            onClick={closeMenu}
-          >
-            Overview
-          </NavLink>
-          <NavLink
-            to="/new"
-            className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
-            onClick={closeMenu}
-          >
-            Novo
-          </NavLink>
-          <NavLink
-            to="/journal"
-            className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
-            onClick={closeMenu}
-          >
-            Lançamentos
-          </NavLink>
-          <NavLink
-            to="/accounts"
-            className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
-            onClick={closeMenu}
-          >
-            Plano
-          </NavLink>
-          <NavLink
-            to="/balances"
-            className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
-            onClick={closeMenu}
-          >
-            Saldos
-          </NavLink>
-          <NavLink
-            to="/recurrences"
-            className={({ isActive }: { isActive: boolean }) => `navLink ${isActive ? "active" : ""}`}
-            onClick={closeMenu}
-          >
-            Recorrências
-          </NavLink>
-        </nav>
       </header>
       <SettingsPanel open={settingsOpen} onClose={closeSettings} />
       <Outlet />
+      <Link to="/new" className="fab" aria-label="Novo lançamento rápido">
+        +
+      </Link>
+      <nav className="bottomNav" aria-label="Navegação principal">
+        <NavLink
+          to="/"
+          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
+          onClick={closeMenu}
+        >
+          <span className="icon">🏠</span>
+          <span>Overview</span>
+        </NavLink>
+        <NavLink
+          to="/journal"
+          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
+          onClick={closeMenu}
+        >
+          <span className="icon">📒</span>
+          <span>Movs</span>
+        </NavLink>
+        <NavLink
+          to="/recurrences"
+          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
+          onClick={closeMenu}
+        >
+          <span className="icon">🔁</span>
+          <span>Recor.</span>
+        </NavLink>
+        <NavLink
+          to="/balances"
+          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
+          onClick={closeMenu}
+        >
+          <span className="icon">💰</span>
+          <span>Saldos</span>
+        </NavLink>
+        <NavLink
+          to="/accounts"
+          className={({ isActive }: { isActive: boolean }) => `bottomLink ${isActive ? "active" : ""}`}
+          onClick={closeMenu}
+        >
+          <span className="icon">📂</span>
+          <span>Plano</span>
+        </NavLink>
+      </nav>
     </div>
   );
 }
