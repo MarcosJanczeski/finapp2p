@@ -238,12 +238,12 @@ body {
 
 .formGrid { /* (pt: gradeFormulario) */
   display: grid;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 
 .formRow { /* (pt: linhaFormulario) */
   display: grid;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 
 label { /* (pt: rotulo) */
